@@ -7,10 +7,10 @@ export type AuthState = {
   error?: string;
 };
 
-async function redirectByRole() {
+async function redirectByRole(): Promise<never> {
   const supabase = await createClient();
   const { data: role } = await supabase.rpc("get_my_role");
-  redirect(role === "admin" ? "/admin" : "/dashboard");
+  return redirect(role === "admin" ? "/admin" : "/dashboard");
 }
 
 export async function login(
@@ -31,7 +31,7 @@ export async function login(
     return { error: "Identifiants incorrects. Vérifiez votre email et mot de passe." };
   }
 
-  await redirectByRole();
+  return redirectByRole();
 }
 
 export async function signup(
@@ -68,5 +68,5 @@ export async function signup(
     return { error: error.message };
   }
 
-  await redirectByRole();
+  return redirectByRole();
 }

@@ -32,7 +32,7 @@ function StatCard({
           </p>
           <p
             className={cn(
-              "mt-2 text-2xl font-bold tracking-tight",
+              "mt-2 text-xl font-bold tracking-tight sm:text-2xl",
               trend === "up" && "text-emerald-400",
               trend === "down" && "text-red-400",
             )}
@@ -61,7 +61,7 @@ export function PortfolioKpiGrid({
   hasLiveData,
 }: PortfolioKpiGridProps) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
       <StatCard
         label="Valeur totale"
         value={hasLiveData ? formatCurrency(totals.totalValue) : "—"}

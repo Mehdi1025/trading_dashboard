@@ -84,7 +84,7 @@ export function PortfolioSection({ initialAssets, prices }: PortfolioSectionProp
         : "Concentré";
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 animate-fade-in">
+    <div className="w-full max-w-7xl space-y-4 sm:space-y-6 animate-fade-in">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-400">
           <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
@@ -150,7 +150,7 @@ export function PortfolioSection({ initialAssets, prices }: PortfolioSectionProp
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
               <div className="relative flex h-28 w-28 shrink-0 items-center justify-center">
                 <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
                   <circle

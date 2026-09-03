@@ -2,41 +2,24 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, BarChart3, LineChart, TrendingUp } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { DotGlobeHero } from "@/components/ui/globe-hero";
 import { Button } from "@/components/ui/button";
 
 export function LandingHero() {
   return (
-    <DotGlobeHero rotationSpeed={0.003} className="bg-[#0a0f14]">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f14]/40 via-transparent to-[#0a0f14]" />
-
-      <header className="relative z-20 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <Link href="/" className="flex items-center gap-2.5">
-          <TrendingUp className="h-5 w-5 text-emerald-400" strokeWidth={2.5} />
-          <span className="text-base font-semibold tracking-tight">Trdng</span>
-        </Link>
-        <nav className="flex items-center gap-2 sm:gap-3">
-          <Button variant="ghost" asChild className="text-muted-foreground hover:text-foreground">
-            <Link href="/login">Connexion</Link>
-          </Button>
-          <Button
-            asChild
-            className="bg-emerald-500 text-slate-950 hover:bg-emerald-400"
-          >
-            <Link href="/register">Inscription</Link>
-          </Button>
-        </nav>
-      </header>
-
-      <div className="relative z-10 mx-auto flex flex-1 flex-col items-center justify-center px-6 pb-16 pt-4 text-center">
+    <DotGlobeHero rotationSpeed={0.0025} globeRadius={1.05}>
+      <div className="relative z-10 mx-auto flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-28 text-center sm:pt-32">
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 text-sm text-emerald-300/90"
+          className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-sm text-emerald-300/90 backdrop-blur-md"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+          </span>
           Suivi portefeuille · cours en direct
         </motion.p>
 
@@ -46,9 +29,11 @@ export function LandingHero() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="max-w-3xl space-y-6"
         >
-          <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl md:text-6xl">
+          <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
             Tout votre crypto,
-            <span className="mt-2 block text-emerald-400">au même endroit.</span>
+            <span className="mt-1 block bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 bg-clip-text text-transparent">
+              au même endroit.
+            </span>
           </h1>
 
           <p className="mx-auto max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -66,7 +51,7 @@ export function LandingHero() {
           <Button
             size="lg"
             asChild
-            className="h-12 bg-emerald-500 px-8 text-base text-slate-950 hover:bg-emerald-400"
+            className="h-12 bg-emerald-500 px-8 text-base text-slate-950 shadow-lg shadow-emerald-500/20 hover:bg-emerald-400"
           >
             <Link href="/register">
               Créer un compte
@@ -77,46 +62,23 @@ export function LandingHero() {
             size="lg"
             variant="outline"
             asChild
-            className="h-12 border-border/60 bg-background/40 px-8 text-base backdrop-blur-sm hover:bg-background/70"
+            className="h-12 border-white/10 bg-white/[0.03] px-8 text-base backdrop-blur-md hover:bg-white/[0.06]"
           >
             <Link href="/login">J&apos;ai déjà un compte</Link>
           </Button>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-16 grid w-full max-w-3xl gap-px overflow-hidden rounded-2xl border border-border/50 bg-border/50 sm:grid-cols-3"
-        >
-          {[
-            {
-              icon: LineChart,
-              label: "Prix live",
-              detail: "BTC, ETH, SOL et plus",
-            },
-            {
-              icon: BarChart3,
-              label: "Performance",
-              detail: "Plus-values et allocation",
-            },
-            {
-              icon: TrendingUp,
-              label: "Actualités",
-              detail: "Flux RSS intégré au dashboard",
-            },
-          ].map(({ icon: Icon, label, detail }) => (
-            <div
-              key={label}
-              className="flex flex-col items-center gap-2 bg-card/80 px-4 py-5 backdrop-blur-sm sm:items-start sm:px-5"
-            >
-              <Icon className="h-4 w-4 text-emerald-400" />
-              <p className="text-sm font-medium">{label}</p>
-              <p className="text-xs text-muted-foreground">{detail}</p>
-            </div>
-          ))}
-        </motion.div>
       </div>
+
+      <motion.a
+        href="#features"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 0.8 }}
+        className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <span>Découvrir</span>
+        <ChevronDown className="h-4 w-4 animate-bounce" />
+      </motion.a>
     </DotGlobeHero>
   );
 }

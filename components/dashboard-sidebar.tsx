@@ -81,6 +81,8 @@ type DashboardSidebarProps = {
   onSectionChange: (section: DashboardSection) => void;
   collapsed: boolean;
   onToggleCollapse: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 };
 
 function SidebarSignOut({ collapsed }: { collapsed: boolean }) {
@@ -114,14 +116,32 @@ export function DashboardSidebar({
   onSectionChange,
   collapsed,
   onToggleCollapse,
+  mobileOpen = false,
+  onMobileClose,
 }: DashboardSidebarProps) {
+  const handleNavClick = (section: DashboardSection) => {
+    onSectionChange(section);
+    onMobileClose?.();
+  };
+
   return (
-    <aside
-      className={cn(
-        "relative z-20 flex h-full shrink-0 flex-col overflow-hidden border-r border-white/[0.06] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-        collapsed ? "w-[76px]" : "w-[288px]",
+    <>
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Fermer le menu"
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+          onClick={onMobileClose}
+        />
       )}
-    >
+
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 flex h-dvh w-[min(288px,88vw)] shrink-0 flex-col overflow-hidden border-r border-white/[0.06] transition-transform duration-300 ease-out lg:static lg:z-20 lg:h-full lg:translate-x-0 lg:transition-[width]",
+          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+          collapsed ? "lg:w-[76px]" : "lg:w-[288px]",
+        )}
+      >
       {/* Background layers */}
       <div className="pointer-events-none absolute inset-0 bg-[#0a0a0f]/80 backdrop-blur-2xl" />
       <div className="pointer-events-none absolute -left-20 top-0 h-64 w-64 rounded-full bg-emerald-500/[0.07] blur-3xl" />
@@ -214,7 +234,7 @@ export function DashboardSidebar({
             <button
               key={item.id}
               type="button"
-              onClick={() => onSectionChange(item.id)}
+              onClick={() => handleNavClick(item.id)}
               title={collapsed ? item.label : undefined}
               className={cn(
                 "group relative flex w-full items-center gap-3 rounded-2xl px-2.5 py-2.5 text-left outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-emerald-500/40",
@@ -315,5 +335,6 @@ export function DashboardSidebar({
         <SidebarSignOut collapsed={collapsed} />
       </div>
     </aside>
+    </>
   );
 }

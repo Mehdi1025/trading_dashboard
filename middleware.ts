@@ -78,6 +78,17 @@ export async function middleware(request: NextRequest) {
     return redirectResponse;
   }
 
+  if ((pathname === "/login" || pathname === "/register") && user) {
+    const { data: role } = await supabase.rpc("get_my_role");
+    const homeUrl = request.nextUrl.clone();
+    homeUrl.pathname = role === "admin" ? "/admin" : "/dashboard";
+    homeUrl.search = "";
+
+    const redirectResponse = NextResponse.redirect(homeUrl);
+    copySupabaseCookies(supabaseResponse, redirectResponse);
+    return redirectResponse;
+  }
+
   // Role check only on /admin — avoids an extra DB round-trip elsewhere.
   if (requiresRoleCheck && user) {
     const { data: role } = await supabase.rpc("get_my_role");

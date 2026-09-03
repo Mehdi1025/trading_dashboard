@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type { ClientProfile } from "@/types/admin";
 import type { PortfolioItem } from "@/types/portfolio";
+import { useCryptoPrices } from "@/hooks/use-crypto-prices";
 
 type AdminDashboardProps = {
   clients: ClientProfile[];
@@ -61,23 +62,8 @@ function computeAssetMetrics(item: PortfolioItem, prices: Record<string, number>
 }
 
 export function AdminDashboard({ clients }: AdminDashboardProps) {
-  const [prices, setPrices] = useState<Record<string, number>>({});
+  const { prices } = useCryptoPrices();
   const [expandedClientId, setExpandedClientId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const eventSource = new EventSource("/api/crypto/stream");
-
-    eventSource.onmessage = (event) => {
-      try {
-        const incoming = JSON.parse(event.data) as Record<string, number>;
-        setPrices(incoming);
-      } catch {
-        // Ignore malformed SSE payloads.
-      }
-    };
-
-    return () => eventSource.close();
-  }, []);
 
   const clientRows = useMemo(
     () =>

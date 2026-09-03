@@ -32,7 +32,7 @@ type LiveTick = {
   symbol: string;
   price: number;
   change24h: number | null;
-  source: "coinbase" | "coingecko";
+  source: "binance" | "coingecko";
   timestamp: number;
 };
 
@@ -269,13 +269,21 @@ export function LiveCryptoChart({
     previousPrice.current = null;
     setConnected(false);
 
-    const eventSource = new EventSource(`/api/crypto/live?pair=${encodeURIComponent(selectedPairId)}`);
+    let cancelled = false;
 
-    eventSource.onopen = () => setConnected(true);
-    eventSource.onmessage = (event) => {
+    async function poll() {
       try {
-        const tick = JSON.parse(event.data) as LiveTick;
-        if (tick.pair !== selectedPairId) return;
+        const response = await fetch(
+          `/api/crypto/tick?pair=${encodeURIComponent(selectedPairId)}`,
+          { cache: "no-store" },
+        );
+        if (!response.ok || cancelled) {
+          setConnected(false);
+          return;
+        }
+
+        const tick = (await response.json()) as LiveTick;
+        if (tick.pair !== selectedPairId || cancelled) return;
 
         setLatest(tick);
         setConnected(true);
@@ -296,13 +304,17 @@ export function LiveCryptoChart({
           return merged.length > MAX_POINTS ? merged.slice(-MAX_POINTS) : merged;
         });
       } catch {
-        // Ignore malformed payloads.
+        if (!cancelled) setConnected(false);
       }
+    }
+
+    void poll();
+    const intervalId = setInterval(poll, 2000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
     };
-
-    eventSource.onerror = () => setConnected(false);
-
-    return () => eventSource.close();
   }, [selectedPairId]);
 
   useEffect(() => {
@@ -354,7 +366,7 @@ export function LiveCryptoChart({
               </span>
               {latest && (
                 <span className="text-xs text-muted-foreground">
-                  {latest.source === "coinbase" ? "Coinbase" : "CoinGecko"}
+                  {latest.source === "binance" ? "Binance" : "CoinGecko"}
                 </span>
               )}
             </div>
@@ -386,7 +398,7 @@ export function LiveCryptoChart({
               </span>
               {latest && (
                 <span className="rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
-                  {latest.source === "coinbase" ? "Coinbase" : "CoinGecko"}
+                  {latest.source === "binance" ? "Binance" : "CoinGecko"}
                 </span>
               )}
             </div>

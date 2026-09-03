@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Activity,
   ArrowUpRight,
@@ -35,6 +35,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useCryptoPrices } from "@/hooks/use-crypto-prices";
 import { cn } from "@/lib/utils";
 import type { PortfolioItem } from "@/types/portfolio";
 
@@ -76,26 +77,11 @@ const SECTION_TITLES: Record<DashboardSection, { title: string; subtitle: string
 
 export function DashboardClient({ initialAssets }: DashboardClientProps) {
   const [assets] = useState(initialAssets);
-  const [prices, setPrices] = useState<Record<string, number>>({});
+  const { prices } = useCryptoPrices();
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [heroTab, setHeroTab] = useState("live-chart");
-
-  useEffect(() => {
-    const eventSource = new EventSource("/api/crypto/stream");
-
-    eventSource.onmessage = (event) => {
-      try {
-        const incoming = JSON.parse(event.data) as Record<string, number>;
-        setPrices(incoming);
-      } catch {
-        // Ignore malformed payloads.
-      }
-    };
-
-    return () => eventSource.close();
-  }, []);
 
   const metrics = useMemo(
     () => computePortfolioMetrics(assets, prices),

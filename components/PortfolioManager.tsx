@@ -111,11 +111,14 @@ export function PortfolioManager({
   useEffect(() => {
     if (usesExternalPrices) return;
 
-    const eventSource = new EventSource("/api/crypto/stream");
+    let cancelled = false;
 
-    eventSource.onmessage = (event) => {
+    async function poll() {
       try {
-        const incoming = JSON.parse(event.data) as Record<string, number>;
+        const response = await fetch("/api/crypto/prices", { cache: "no-store" });
+        if (!response.ok || cancelled) return;
+
+        const incoming = (await response.json()) as Record<string, number>;
 
         setInternalPrices((previous) => {
           const flashes: Record<string, PriceFlash> = {};
@@ -130,7 +133,7 @@ export function PortfolioManager({
           if (Object.keys(flashes).length > 0) {
             setPriceFlash((current) => ({ ...current, ...flashes }));
 
-            for (const [symbol, direction] of Object.entries(flashes)) {
+            for (const [symbol] of Object.entries(flashes)) {
               if (flashTimeouts.current[symbol]) {
                 clearTimeout(flashTimeouts.current[symbol]);
               }
@@ -148,12 +151,16 @@ export function PortfolioManager({
           return incoming;
         });
       } catch {
-        // Ignore malformed SSE payloads.
+        // Ignore transient fetch errors.
       }
-    };
+    }
+
+    void poll();
+    const intervalId = setInterval(poll, 3000);
 
     return () => {
-      eventSource.close();
+      cancelled = true;
+      clearInterval(intervalId);
       Object.values(flashTimeouts.current).forEach(clearTimeout);
     };
   }, [usesExternalPrices]);
